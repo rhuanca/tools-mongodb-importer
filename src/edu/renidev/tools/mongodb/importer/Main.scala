@@ -7,6 +7,7 @@ import scala.swing.Dimension
 import scala.swing.MainFrame
 import scala.swing.SimpleSwingApplication
 import scala.sys.process.urlToProcess
+import scala.sys.process._
 
 object Main extends SimpleSwingApplication {
   def top = new MainFrame {
@@ -21,13 +22,6 @@ object Main extends SimpleSwingApplication {
         {
           val worker = new Thread(new Worker(form.getUrl(), "output.txt", form))
           worker.start()
-          //new URL(form.getUrl()) #> new File("output.txt") !
-
-          //        val in = scala.io.Source.fromURL(form.getUrl(),
-          //          "utf-8")
-          //        
-          //        for (line <- in.getLines)
-          //          println(line)
         }
     }
   }
@@ -39,9 +33,11 @@ object Main extends SimpleSwingApplication {
     def run {
       form.setEnabled(false)
       form.updateStatus("downloading json")
-      
-      new URL(url) #> new File(out) !
-
+      new URL(url) #> new File(out) !;
+      form.updateStatus("importing data")
+      println("form.collectionName = " + form.collectionName)
+      "mongoimport --db games --collection "+form.collectionName.text+" --file output.txt  --jsonArray"!;
+      form.updateStatus("finished to download json")
       form.setEnabled(true)
     }
   }
